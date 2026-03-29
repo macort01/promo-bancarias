@@ -1,253 +1,139 @@
 <!DOCTYPE html>
 <html lang="es-AR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Encontrá las mejores promociones bancarias y comparás precios en Argentina - 100% Gratis">
-    <meta name="theme-color" content="#0033A0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <title>Promos Argentina - Promociones Bancarias Gratis</title>
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
-    
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="/css/styles.css">
-    
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f3d91">
+  <title>Comparador SEPA</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <h1 class="logo">
-                <i class="fas fa-tags"></i>
-                <span>Promos<strong>AR</strong></span>
-            </h1>
-            <button class="notif-btn" id="notifBtn">
-                <i class="fas fa-bell"></i>
-                <span class="badge">3</span>
-            </button>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Search Bar -->
-        <div class="search-container">
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Buscar promociones, bancos, rubros..." id="mainSearch">
-                <button class="filter-btn" id="filterBtn">
-                    <i class="fas fa-sliders-h"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Quick Filters -->
-        <div class="quick-filters">
-            <h3 class="section-title">Filtrá por día</h3>
-            <div class="day-filters" id="dayFilters">
-                <button class="day-chip active" data-day="all">Todos</button>
-                <button class="day-chip" data-day="lunes">Lunes</button>
-                <button class="day-chip" data-day="martes">Martes</button>
-                <button class="day-chip" data-day="miercoles">Miércoles</button>
-                <button class="day-chip" data-day="jueves">Jueves</button>
-                <button class="day-chip" data-day="viernes">Viernes</button>
-                <button class="day-chip" data-day="sabado">Sábado</button>
-                <button class="day-chip" data-day="domingo">Domingo</button>
-            </div>
-        </div>
-
-        <!-- Featured Promotions -->
-        <section class="promotions-section">
-            <div class="section-header">
-                <h3 class="section-title">Promociones destacadas</h3>
-                <a href="#" class="view-all" data-action="view-all">Ver todas <i class="fas fa-arrow-right"></i></a>
-            </div>
-            
-            <div class="promotions-grid" id="promotionsGrid">
-                <!-- Promociones se cargan dinámicamente -->
-                <div class="promotion-card loading-card">
-                    <div class="shimmer"></div>
-                </div>
-                <div class="promotion-card loading-card">
-                    <div class="shimmer"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Categories -->
-        <section class="categories-section">
-            <h3 class="section-title">Explorá por rubro</h3>
-            <div class="categories-grid">
-                <a href="#" class="category-card" data-category="supermercados">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Supermercados</span>
-                </a>
-                <a href="#" class="category-card" data-category="restaurantes">
-                    <i class="fas fa-utensils"></i>
-                    <span>Restaurantes</span>
-                </a>
-                <a href="#" class="category-card" data-category="combustible">
-                    <i class="fas fa-gas-pump"></i>
-                    <span>Combustible</span>
-                </a>
-                <a href="#" class="category-card" data-category="farmacias">
-                    <i class="fas fa-prescription-bottle-medical"></i>
-                    <span>Farmacias</span>
-                </a>
-                <a href="#" class="category-card" data-category="indumentaria">
-                    <i class="fas fa-tshirt"></i>
-                    <span>Indumentaria</span>
-                </a>
-                <a href="#" class="category-card" data-category="electrodomesticos">
-                    <i class="fas fa-tv"></i>
-                    <span>Electro</span>
-                </a>
-                <a href="#" class="category-card" data-category="entretenimiento">
-                    <i class="fas fa-film"></i>
-                    <span>Cine</span>
-                </a>
-                <a href="#" class="category-card" data-category="viajes">
-                    <i class="fas fa-plane"></i>
-                    <span>Viajes</span>
-                </a>
-            </div>
-        </section>
-
-        <!-- Price Comparator CTA -->
-        <section class="comparator-cta">
-            <div class="cta-card">
-                <div class="cta-icon">
-                    <i class="fas fa-balance-scale"></i>
-                </div>
-                <div class="cta-content">
-                    <h4>Comparador de Precios</h4>
-                    <p>Encontrá el mejor precio y dónde comprarlo más barato</p>
-                </div>
-                <button class="cta-btn" id="comparatorBtn">
-                    Comparar <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
-        </section>
-    </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="/" class="nav-item active">
-            <i class="fas fa-home"></i>
-            <span>Inicio</span>
-        </a>
-        <a href="/buscador.html" class="nav-item">
-            <i class="fas fa-search"></i>
-            <span>Buscador</span>
-        </a>
-        <a href="/mis-listas.html" class="nav-item">
-            <i class="fas fa-list"></i>
-            <span>Mis listas</span>
-        </a>
-        <a href="/mi-cuenta.html" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Mi cuenta</span>
-        </a>
-    </nav>
-
-    <!-- Filter Modal -->
-    <div class="modal" id="filterModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Filtros</h3>
-                <button class="close-btn" id="closeFilterModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Banco/Billetera -->
-                <div class="filter-group">
-                    <h4>Banco o billetera</h4>
-                    <select class="filter-select" id="bankFilter">
-                        <option value="">Todos</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <h4>Rubro</h4>
-                    <select class="filter-select" id="categoryFilter">
-                        <option value="">Todos</option>
-                    </select>
-                </div>
-
-                <!-- Provincia -->
-                <div class="filter-group">
-                    <h4>Provincia</h4>
-                    <select class="filter-select" id="provinciaFilter">
-                        <option value="">Todas las provincias</option>
-                        <option value="buenos aires">Buenos Aires</option>
-                        <option value="santa fe">Santa Fe</option>
-                        <option value="san juan">San Juan</option>
-                        <option value="cordoba">Córdoba</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <h4>Ubicación puntual</h4>
-                    <select class="filter-select" id="locationFilter">
-                        <option value="">Cualquier ubicación</option>
-                        <option value="rosario">Rosario</option>
-                        <option value="san juan">San Juan</option>
-                        <option value="jachal">Jáchal</option>
-                    </select>
-                </div>
-
-                <!-- Descuento mínimo -->
-                <div class="filter-group">
-                    <h4>Descuento mínimo</h4>
-                    <input type="range" min="0" max="100" value="0" class="slider" id="discountSlider">
-                    <span class="slider-value" id="discountValue">0%</span>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" id="clearFilters">Limpiar</button>
-                <button class="btn-primary" id="applyFilters">Aplicar filtros</button>
-            </div>
-        </div>
+  <header class="topbar">
+    <div class="topbar__content">
+      <div>
+        <p class="eyebrow">Solo precios oficiales</p>
+        <h1>Comparador de precios SEPA</h1>
+      </div>
+      <span class="chip chip--primary">Inicio</span>
     </div>
+  </header>
 
-    <!-- Install Prompt -->
-    <div class="install-prompt" id="installPrompt" style="display: none;">
-        <div class="install-content">
-            <i class="fas fa-download"></i>
-            <p>Instalá la app en tu celular para un acceso más rápido</p>
-            <button class="install-btn" id="installBtn">Instalar</button>
-            <button class="dismiss-btn" id="dismissInstall">Ahora no</button>
+  <main class="page">
+    <section class="hero card">
+      <div class="hero__text">
+        <p class="eyebrow">Buscá por nombre o código de barras</p>
+        <h2>Encontrá el precio más barato y el supermercado donde conviene comprar.</h2>
+        <p class="muted">La app consulta solo datos del archivo SEPA cargado en el servidor. No usa promociones bancarias ni la sección Mi cuenta.</p>
+      </div>
+
+      <form id="searchForm" class="search-panel">
+        <label class="field-label" for="searchInput">Producto</label>
+        <div class="search-row">
+          <input id="searchInput" name="query" type="text" placeholder="Ej: leche entera 1 litro o código de barras" autocomplete="off">
+          <button type="submit" class="btn btn--primary">Buscar</button>
         </div>
-    </div>
 
-    <!-- Scripts -->
-    <script src="/js/app.js"></script>
-    
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(reg => console.log('Service Worker registered'))
-                    .catch(err => console.log('Service Worker registration failed'));
-            });
-        }
-    </script>
+        <div class="action-row">
+          <button type="button" id="scanButton" class="btn btn--secondary">Escanear código</button>
+          <button type="button" id="manualButton" class="btn btn--ghost">Ingresar código manual</button>
+        </div>
+
+        <div class="filters-inline">
+          <div>
+            <label class="field-label" for="provinceInput">Provincia</label>
+            <input id="provinceInput" type="text" placeholder="Opcional: Santa Fe, San Juan...">
+          </div>
+          <div>
+            <label class="field-label" for="limitInput">Resultados</label>
+            <select id="limitInput">
+              <option value="12">12</option>
+              <option value="24">24</option>
+              <option value="36">36</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="status card" id="statusCard">
+      <div>
+        <p class="eyebrow">Estado</p>
+        <h3 id="statusTitle">Esperando búsqueda</h3>
+        <p class="muted" id="statusText">Escribí un producto o tocá “Escanear código”.</p>
+      </div>
+      <div class="status__meta" id="datasetMeta">Sin datos todavía.</div>
+    </section>
+
+    <section id="setupNotice" class="notice notice--hidden">
+      <strong>Falta cargar SEPA.</strong>
+      <span id="setupText">Subí el archivo <code>backend/data/sepa.csv</code> al repositorio o configurá <code>SEPA_CSV_PATH</code> en el servidor.</span>
+    </section>
+
+    <section id="resultsSection" class="results-section">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Resultados</p>
+          <h3 id="resultsTitle">Todavía no buscaste nada</h3>
+        </div>
+        <span class="chip" id="resultsCount">0 productos</span>
+      </div>
+
+      <div id="resultsGrid" class="results-grid">
+        <div class="empty-state card">
+          <div class="empty-state__icon">🔎</div>
+          <h4>Buscá un producto</h4>
+          <p>Podés escribir el nombre o escanear el código de barras desde la cámara.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="scannerModal" aria-hidden="true">
+    <div class="modal__backdrop" data-close="scanner"></div>
+    <div class="modal__dialog">
+      <div class="modal__header">
+        <h3>Escanear código de barras</h3>
+        <button type="button" class="icon-button" data-close="scanner">✕</button>
+      </div>
+      <div class="modal__body">
+        <video id="scannerVideo" class="scanner-video" autoplay playsinline muted></video>
+        <p class="muted" id="scannerHint">Apuntá la cámara al código. Si tu navegador no soporta escaneo automático, usá “Ingresar código manual”.</p>
+        <div class="scanner-frame"></div>
+      </div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--ghost" data-close="scanner">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="manualModal" aria-hidden="true">
+    <div class="modal__backdrop" data-close="manual"></div>
+    <div class="modal__dialog modal__dialog--small">
+      <div class="modal__header">
+        <h3>Ingresar código manual</h3>
+        <button type="button" class="icon-button" data-close="manual">✕</button>
+      </div>
+      <form id="manualForm" class="modal__body stack-md">
+        <div>
+          <label class="field-label" for="manualBarcodeInput">Código de barras</label>
+          <input id="manualBarcodeInput" type="text" inputmode="numeric" placeholder="Ej: 7791234567890">
+        </div>
+        <button type="submit" class="btn btn--primary btn--full">Buscar producto</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>
