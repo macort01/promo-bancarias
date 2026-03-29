@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0033A0">
+    <title>Buscador y comparador - Promos Argentina</title>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">
+                <i class="fas fa-search"></i>
+                <span>Buscador</span>
+            </h1>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="search-container">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar promos o productos del SEPA..." id="searchInput" autofocus>
+            </div>
+        </div>
+
+        <section class="advanced-filters">
+            <h3 class="section-title">Modo de búsqueda</h3>
+            <div class="filter-row">
+                <label>Fuente</label>
+                <select id="searchMode" class="filter-select">
+                    <option value="promociones">Promociones bancarias</option>
+                    <option value="comparador">Comparador oficial SEPA</option>
+                </select>
+            </div>
+
+            <div class="filter-row">
+                <label>Banco o billetera</label>
+                <select id="bankFilter" class="filter-select">
+                    <option value="">Todos</option>
+                    <option value="Santander">Santander</option>
+                    <option value="Banco Galicia">Banco Galicia</option>
+                    <option value="BBVA">BBVA</option>
+                    <option value="Banco Macro">Banco Macro</option>
+                    <option value="Banco Nación">Banco Nación</option>
+                    <option value="Mercado Pago">Mercado Pago</option>
+                    <option value="Ualá">Ualá</option>
+                    <option value="Personal Pay">Personal Pay</option>
+                </select>
+            </div>
+
+            <div class="filter-row">
+                <label>Rubro</label>
+                <select id="categoryFilter" class="filter-select">
+                    <option value="">Todos</option>
+                    <option value="supermercados">Supermercados</option>
+                    <option value="restaurantes">Restaurantes</option>
+                    <option value="combustible">Combustible</option>
+                    <option value="farmacias">Farmacias</option>
+                    <option value="indumentaria">Indumentaria</option>
+                    <option value="electrodomesticos">Electrodomésticos</option>
+                    <option value="entretenimiento">Entretenimiento</option>
+                    <option value="viajes">Viajes</option>
+                </select>
+            </div>
+
+            <div class="filter-row">
+                <label>Provincia</label>
+                <select id="provinceFilter" class="filter-select">
+                    <option value="">Todas</option>
+                    <option value="caba">CABA</option>
+                    <option value="buenos aires">Buenos Aires</option>
+                    <option value="cordoba">Córdoba</option>
+                    <option value="santa fe">Santa Fe</option>
+                    <option value="mendoza">Mendoza</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="search-results">
+            <div class="results-header">
+                <h3 class="section-title">Resultados <span id="resultCount"></span></h3>
+            </div>
+            <p id="resultMeta" style="font-size:13px;color:var(--gray-600);margin-bottom:12px;"></p>
+            <div class="promotions-grid" id="searchResults">
+                <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                    <i class="fas fa-search" style="font-size: 64px; color: var(--gray-300); margin-bottom: 16px;"></i>
+                    <p style="color: var(--gray-600); font-size: 16px;">Buscá promociones o productos</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="/" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Inicio</span>
+        </a>
+        <a href="/buscador.html" class="nav-item active">
+            <i class="fas fa-search"></i>
+            <span>Buscador</span>
+        </a>
+        <a href="/mis-listas.html" class="nav-item">
+            <i class="fas fa-list"></i>
+            <span>Mis listas</span>
+        </a>
+        <a href="/mi-cuenta.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Mi cuenta</span>
+        </a>
+    </nav>
+
+    <style>
+        .advanced-filters { margin-bottom: 24px; }
+        .filter-row { margin-bottom: 16px; }
+        .filter-row label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-800); margin-bottom: 8px; }
+        .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .result-card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,.06); }
+        .result-card h4 { margin-bottom: 10px; }
+        .result-list { margin-top: 10px; display: grid; gap: 8px; }
+        .result-line { display:flex; justify-content:space-between; gap:12px; font-size:14px; }
+        .muted { color: var(--gray-600); font-size: 13px; }
+    </style>
+
+    <script src="/js/app.js"></script>
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchMode = document.getElementById('searchMode');
+        const bankFilter = document.getElementById('bankFilter');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const provinceFilter = document.getElementById('provinceFilter');
+        const searchResults = document.getElementById('searchResults');
+        const resultCount = document.getElementById('resultCount');
+        const resultMeta = document.getElementById('resultMeta');
+
+        async function performSearch() {
+            const query = searchInput.value.trim();
+            const bank = bankFilter.value;
+            const category = categoryFilter.value;
+            const province = provinceFilter.value;
+            const mode = searchMode.value;
+
+            if (!query) {
+                searchResults.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;">Escribí algo para buscar.</div>';
+                resultCount.textContent = '';
+                resultMeta.textContent = '';
+                return;
+            }
+
+            searchResults.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;">Buscando...</div>';
+
+            try {
+                if (mode === 'promociones') {
+                    const params = new URLSearchParams({ search: query });
+                    if (bank) params.set('banco', bank);
+                    if (category) params.set('rubro', category);
+                    if (province) params.set('provincia', province);
+                    const res = await fetch(`/api/promociones?${params.toString()}`);
+                    const data = await res.json();
+                    resultCount.textContent = `(${data.count || 0})`;
+                    resultMeta.textContent = 'Fuente: promociones cargadas y verificadas manualmente.';
+                    renderPromotionCards(data.data || []);
+                } else {
+                    const params = new URLSearchParams({ query });
+                    if (province) params.set('provincia', province);
+                    const res = await fetch(`/api/comparador/buscar?${params.toString()}`);
+                    const data = await res.json();
+                    resultCount.textContent = `(${data.count || 0})`;
+                    resultMeta.textContent = data.meta?.loadedAt ? `Fuente oficial SEPA. Última carga local: ${new Date(data.meta.loadedAt).toLocaleString('es-AR')}` : 'Fuente oficial SEPA.';
+                    renderProductCards(data.data || []);
+                }
+            } catch (error) {
+                searchResults.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;">Error al buscar.</div>';
+                resultMeta.textContent = '';
+            }
+        }
+
+
+        function renderPromotionCards(promotions) {
+            if (!promotions.length) {
+                searchResults.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;">No se encontraron promociones.</div>';
+                return;
+            }
+            searchResults.innerHTML = '';
+            promotions.forEach((promo) => {
+                const card = createPromotionCard(promo);
+                searchResults.appendChild(card);
+            });
+        }
+
+        function renderProductCards(products) {
+            if (!products.length) {
+                searchResults.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;">No se encontraron productos.</div>';
+                return;
+            }
+            searchResults.innerHTML = products.map((product) => {
+                const lines = product.comercios.slice(0, 4).map((c) => `
+                    <div class="result-line">
+                        <div>
+                            <strong>${c.nombre}</strong><div class="muted">${c.ubicacion || ''}</div>
+                        </div>
+                        <div><strong>$${Number(c.precio).toLocaleString('es-AR')}</strong></div>
+                    </div>
+                `).join('');
+                return `
+                    <div class="result-card">
+                        <h4>${product.nombre}</h4>
+                        <div class="muted">${product.marca || ''} ${product.ean ? '· EAN ' + product.ean : ''}</div>
+                        <div class="result-list">${lines}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        searchInput.addEventListener('input', debounce(performSearch, 400));
+        searchMode.addEventListener('change', performSearch);
+        bankFilter.addEventListener('change', performSearch);
+        categoryFilter.addEventListener('change', performSearch);
+        provinceFilter.addEventListener('change', performSearch);
+    </script>
+</body>
+</html>

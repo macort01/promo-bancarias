@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0033A0">
+    <title>Mi Cuenta - Promos Argentina</title>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=400;500;600;700&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">
+                <i class="fas fa-user"></i>
+                <span>Mi Cuenta</span>
+            </h1>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- User Profile Section -->
+        <section class="profile-section">
+            <div class="profile-card" style="cursor:pointer;" data-account-action="profile">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="profile-info">
+                    <h3 id="userName">Usuario</h3>
+                    <p id="userEmail">usuario@email.com</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu Options -->
+        <section class="menu-section">
+            <a href="#" class="menu-item" data-account-action="banks"><div class="menu-icon"><i class="fas fa-credit-card"></i></div><span>Bancos y billeteras favoritas</span><i class="fas fa-chevron-right"></i></a>
+
+            <a href="#" class="menu-item" data-account-action="notifications"><div class="menu-icon"><i class="fas fa-bell"></i></div><span>Notificaciones</span><i class="fas fa-chevron-right"></i></a>
+
+            <a href="#" class="menu-item" data-account-action="location"><div class="menu-icon"><i class="fas fa-map-marker-alt"></i></div><span>Mi ubicación</span><i class="fas fa-chevron-right"></i></a>
+
+            <a href="#" class="menu-item" data-account-action="faq"><div class="menu-icon"><i class="fas fa-question-circle"></i></div><span>FAQs</span><i class="fas fa-chevron-right"></i></a>
+
+            <a href="#" class="menu-item" data-account-action="feedback"><div class="menu-icon"><i class="fas fa-comment"></i></div><span>Dar feedback</span><i class="fas fa-chevron-right"></i></a>
+
+            <a href="#" class="menu-item" data-account-action="about"><div class="menu-icon"><i class="fas fa-info-circle"></i></div><span>Sobre la app</span><i class="fas fa-chevron-right"></i></a>
+        </section>
+
+        <!-- App Info -->
+        <section class="app-info">
+            <p>Promos Argentina - v1.0.0</p>
+            <p>100% Gratis - Sin publicidad</p>
+            <p style="margin-top: 16px;">
+                <a href="https://github.com" target="_blank" style="color: var(--primary-blue); text-decoration: none;">
+                    <i class="fab fa-github"></i> Ver en GitHub
+                </a>
+            </p>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="/" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Inicio</span>
+        </a>
+        <a href="/buscador.html" class="nav-item">
+            <i class="fas fa-search"></i>
+            <span>Buscador</span>
+        </a>
+        <a href="/mis-listas.html" class="nav-item">
+            <i class="fas fa-list"></i>
+            <span>Mis listas</span>
+        </a>
+        <a href="/mi-cuenta.html" class="nav-item active">
+            <i class="fas fa-user"></i>
+            <span>Mi cuenta</span>
+        </a>
+    </nav>
+
+    <style>
+        .profile-section {
+            margin-bottom: 24px;
+        }
+
+        .profile-card {
+            background: var(--gradient-primary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-avatar i {
+            font-size: 32px;
+            color: var(--white);
+        }
+
+        .profile-info {
+            flex: 1;
+            color: var(--white);
+        }
+
+        .profile-info h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .menu-section {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            text-decoration: none;
+            color: var(--gray-900);
+            border-bottom: 1px solid var(--gray-200);
+            transition: var(--transition-fast);
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background: var(--gray-100);
+        }
+
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gray-100);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .menu-icon i {
+            font-size: 18px;
+            color: var(--primary-blue);
+        }
+
+        .menu-item span {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .menu-item > i {
+            color: var(--gray-400);
+            font-size: 14px;
+        }
+
+        .app-info {
+            text-align: center;
+            padding: 24px;
+            color: var(--gray-600);
+            font-size: 13px;
+        }
+
+        .app-info p {
+            margin-bottom: 4px;
+        }
+    </style>
+</body>
+</html>
