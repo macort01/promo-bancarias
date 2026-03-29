@@ -1,83 +1,50 @@
-const express = require('express');
-const { searchProducts } = require('../services/sepaService');
-
+const express = require("express");
 const router = express.Router();
+const { buscarEnSEPA } = require("../services/sepaService");
 
-router.get('/buscar', async (req, res, next) => {
+router.get("/buscar", async (req, res) => {
   try {
-    const { query, categoria, provincia, limit = 20 } = req.query;
+    const query = (req.query.query || "").toLowerCase().trim();
 
     if (!query) {
-      return res.status(400).json({ success: false, error: 'Se requiere un término de búsqueda' });
+      return res.json({
+        success: true,
+        total: 0,
+        data: []
+      });
     }
 
-    const { products, loadedAt, source } = await searchProducts({ query, provincia, limit: Number(limit) });
-    const filtered = categoria
-      ? products.filter((p) => String(p.categoria || '').toLowerCase() === String(categoria).toLowerCase())
-      : products;
+    let resultados = [];
+
+    try {
+      resultados = await buscarEnSEPA(query);
+    } catch (err) {
+      console.error("Error SEPA:", err.message);
+
+      resultados = [
+        {
+          nombre: "Producto no disponible",
+          precio: 0,
+          comercio: "Sin datos",
+          nota: "No se pudo consultar SEPA"
+        }
+      ];
+    }
 
     return res.json({
       success: true,
-      count: filtered.length,
-      data: filtered,
-      meta: {
-        source: 'SEPA',
-        datasetUrl: 'https://datos.produccion.gob.ar/dataset/sepa-precios',
-        loadedAt: loadedAt ? new Date(loadedAt).toISOString() : null,
-        sourceFile: source,
-      },
+      total: resultados.length,
+      data: resultados
     });
+
   } catch (error) {
-    return next(error);
-  }
-});
+    console.error("Error general comparador:", error);
 
-router.get('/producto/:id', async (req, res, next) => {
-  try {
-    const { query = req.params.id } = req.query;
-    const { products, loadedAt, source } = await searchProducts({ query, limit: 100 });
-    const producto = products.find((p) => p.id === req.params.id || p.ean === req.params.id || p.nombre === req.params.id);
-
-    if (!producto) {
-      return res.status(404).json({ success: false, error: 'Producto no encontrado' });
-    }
-
-    const prices = producto.comercios.map((c) => c.precio);
-    const precioMasBajo = Math.min(...prices);
-    const precioMasAlto = Math.max(...prices);
-    const comercioMasBarato = producto.comercios.find((c) => c.precio === precioMasBajo);
-
-    return res.json({
-      success: true,
-      data: {
-        ...producto,
-        precioMasBajo,
-        comercioMasBarato,
-        diferenciaPrecio: {
-          max: precioMasAlto,
-          min: precioMasBajo,
-          porcentaje: precioMasBajo ? (((precioMasAlto - precioMasBajo) / precioMasBajo) * 100).toFixed(2) : '0.00',
-        },
-      },
-      meta: {
-        source: 'SEPA',
-        datasetUrl: 'https://datos.produccion.gob.ar/dataset/sepa-precios',
-        loadedAt: loadedAt ? new Date(loadedAt).toISOString() : null,
-        sourceFile: source,
-      },
+    return res.status(200).json({
+      success: false,
+      error: "No se pudo procesar la búsqueda",
+      data: []
     });
-  } catch (error) {
-    return next(error);
-  }
-});
-
-router.get('/categorias', async (req, res, next) => {
-  try {
-    const { products } = await searchProducts({ query: req.query.query || ' ', limit: 200 });
-    const categorias = [...new Set(products.map((p) => p.categoria).filter(Boolean))];
-    return res.json({ success: true, data: categorias });
-  } catch (error) {
-    return next(error);
   }
 });
 
