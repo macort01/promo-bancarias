@@ -31,7 +31,6 @@ router.get('/buscar', async (req, res) => {
     });
   } catch (error) {
     console.error('Error general comparador:', error);
-
     return res.status(200).json({
       success: false,
       error: 'No se pudo procesar la búsqueda',
