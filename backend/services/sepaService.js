@@ -81,7 +81,7 @@ async function parseLocalCsvFile(filePath) {
     const results = [];
 
     fs.createReadStream(filePath)
-      .pipe(csv())
+      .pipe(csv({ separator: '|' }))
       .on('data', (row) => {
         if (results.length >= MAX_ROWS_TO_SCAN) return;
 
