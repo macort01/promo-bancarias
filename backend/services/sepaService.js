@@ -1,12 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
-const AdmZip = require('adm-zip');
 const csv = require('csv-parser');
-const { Readable } = require('stream');
 
-const SEPA_DATASET_PAGE = process.env.SEPA_DATASET_PAGE || 'https://datos.produccion.gob.ar/dataset/sepa-precios';
-const SEPA_CSV_PATH = process.env.SEPA_CSV_PATH || '';
+const SEPA_CSV_PATH = process.env.SEPA_CSV_PATH || '/app/backend/data/productos.csv';
+const SEPA_COMERCIO_PATH = process.env.SEPA_COMERCIO_PATH || '/app/backend/data/comercio.csv';
+const SEPA_SUCURSALES_PATH = process.env.SEPA_SUCURSALES_PATH || '/app/backend/data/sucursales.csv';
 const CACHE_TTL_MS = Number(process.env.SEPA_CACHE_TTL_MS || 6 * 60 * 60 * 1000);
 const MAX_ROWS_TO_SCAN = Number(process.env.SEPA_MAX_ROWS_TO_SCAN || 250000);
 
@@ -24,15 +22,6 @@ function normalizeText(value) {
     .trim();
 }
 
-function coalesce(obj, keys) {
-  for (const key of keys) {
-    if (obj[key] !== undefined && obj[key] !== null && String(obj[key]).trim() !== '') {
-      return obj[key];
-    }
-  }
-  return '';
-}
-
 function parsePrice(value) {
   const cleaned = String(value || '')
     .replace(/\./g, '')
@@ -41,123 +30,115 @@ function parsePrice(value) {
   return Number(cleaned) || 0;
 }
 
-async function getLatestZipUrl() {
-  const response = await axios.get(SEPA_DATASET_PAGE, {
-    timeout: 30000,
-    responseType: 'text',
-    headers: {
-      'User-Agent': 'Mozilla/5.0',
-    },
-  });
-
-  const html = response.data;
-  const match = html.match(/https:\/\/datos\.produccion\.gob\.ar\/dataset\/[^"']+\/download\/[^"']+\.zip/);
-
-  if (!match) {
-    throw new Error('No pude detectar el ZIP más reciente de SEPA en la página pública.');
-  }
-
-  return match[0];
-}
-
-function mapRow(row) {
-  return {
-    id: coalesce(row, ['id_producto', 'productos_id', 'product_id']),
-    ean: coalesce(row, ['productos_ean', 'ean', 'codigo_barras']),
-    nombre: coalesce(row, ['productos_descripcion', 'descripcion', 'nombre', 'producto']),
-    marca: coalesce(row, ['productos_marca', 'marca']),
-    categoria: coalesce(row, ['categoria', 'rubro', 'productos_categoria']),
-    comercio: coalesce(row, [
-      'comercio_razon_social',
-      'comercio_bandera',
-      'banderaDescripcion',
-      'sucursal_nombre',
-      'bandera',
-    ]),
-    sucursal: coalesce(row, ['sucursal_nombre', 'sucursal_direccion', 'direccion']),
-    provincia: coalesce(row, ['provincia', 'provincia_nombre']),
-    localidad: coalesce(row, ['localidad', 'municipio_nombre']),
-    precioLista: parsePrice(coalesce(row, ['precio_lista', 'precioLista', 'precio_regular', 'productos_precio_lista'])),
-    precioPromo: parsePrice(coalesce(row, ['precio_promocion', 'precioPromocion', 'precio_oferta', 'productos_precio_unitario_promocion2'])),
-    fecha: coalesce(row, ['date', 'fecha', 'fecha_vigencia']),
-  };
-}
-
-function parseCsvBuffer(buffer) {
+function readPipeCsv(filePath, mapper) {
   return new Promise((resolve, reject) => {
-    const results = [];
+    if (!fs.existsSync(filePath)) {
+      return reject(new Error(`No existe el archivo: ${filePath}`));
+    }
 
-    Readable.from(buffer)
-      .pipe(csv({ separator: '|' }))
-      .on('data', (row) => {
-        if (results.length >= MAX_ROWS_TO_SCAN) return;
-        results.push(mapRow(row));
-      })
-      .on('end', () => {
-        resolve(results.filter((item) => item.nombre && (item.precioPromo || item.precioLista)));
-      })
-      .on('error', reject);
-  });
-}
-
-async function parseLocalCsvFile(filePath) {
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`No existe el archivo local SEPA: ${filePath}`);
-  }
-
-  return new Promise((resolve, reject) => {
     const results = [];
 
     fs.createReadStream(filePath)
       .pipe(csv({ separator: '|' }))
       .on('data', (row) => {
+        results.push(mapper ? mapper(row) : row);
+      })
+      .on('end', () => resolve(results))
+      .on('error', reject);
+  });
+}
+
+async function loadComercios() {
+  const rows = await readPipeCsv(SEPA_COMERCIO_PATH);
+  const map = new Map();
+
+  for (const row of rows) {
+    const key = `${row.id_comercio || ''}-${row.id_bandera || ''}`;
+    map.set(key, {
+      id_comercio: row.id_comercio || '',
+      id_bandera: row.id_bandera || '',
+      nombre: row.comercio_razon_social || row.bandera_descripcion || row.bandera || 'Comercio no informado',
+    });
+  }
+
+  return map;
+}
+
+async function loadSucursales() {
+  const rows = await readPipeCsv(SEPA_SUCURSALES_PATH);
+  const map = new Map();
+
+  for (const row of rows) {
+    const key = `${row.id_comercio || ''}-${row.id_sucursal || ''}`;
+    map.set(key, {
+      id_comercio: row.id_comercio || '',
+      id_sucursal: row.id_sucursal || '',
+      provincia: row.nom_provincia || row.provincia || '',
+      localidad: row.nom_localidad || row.localidad || '',
+      direccion: row.domicilio || row.direccion || '',
+      sucursal_nombre: row.sucursal_nombre || row.nom_sucursal || '',
+    });
+  }
+
+  return map;
+}
+
+async function loadProductos(comerciosMap, sucursalesMap) {
+  return new Promise((resolve, reject) => {
+    const results = [];
+
+    if (!fs.existsSync(SEPA_CSV_PATH)) {
+      return reject(new Error(`No existe el archivo: ${SEPA_CSV_PATH}`));
+    }
+
+    fs.createReadStream(SEPA_CSV_PATH)
+      .pipe(csv({ separator: '|' }))
+      .on('data', (row) => {
         if (results.length >= MAX_ROWS_TO_SCAN) return;
-        results.push(mapRow(row));
+
+        const idComercio = row.id_comercio || '';
+        const idBandera = row.id_bandera || '';
+        const idSucursal = row.id_sucursal || '';
+
+        const comercioKey = `${idComercio}-${idBandera}`;
+        const sucursalKey = `${idComercio}-${idSucursal}`;
+
+        const comercio = comerciosMap.get(comercioKey);
+        const sucursal = sucursalesMap.get(sucursalKey);
+
+        const item = {
+          id: row.id_producto || '',
+          ean: row.productos_ean || '',
+          nombre: row.productos_descripcion || '',
+          marca: row.productos_marca || '',
+          categoria: row.categoria || row.rubro || '',
+          comercio: comercio?.nombre || `Comercio ${idComercio}`,
+          sucursal: sucursal?.sucursal_nombre || sucursal?.direccion || '',
+          provincia: sucursal?.provincia || '',
+          localidad: sucursal?.localidad || '',
+          precioLista: parsePrice(row.productos_precio_lista || row.precio_lista),
+          precioPromo: parsePrice(row.productos_precio_unitario_promocion2 || row.precio_promocion),
+          fecha: row.fecha || '',
+        };
+
+        if (item.nombre && (item.precioPromo || item.precioLista)) {
+          results.push(item);
+        }
       })
-      .on('end', () => {
-        resolve(results.filter((item) => item.nombre && (item.precioPromo || item.precioLista)));
-      })
+      .on('end', () => resolve(results))
       .on('error', reject);
   });
 }
 
 async function refreshCache() {
-  if (SEPA_CSV_PATH) {
-    const localPath = path.resolve(SEPA_CSV_PATH);
-    const rows = await parseLocalCsvFile(localPath);
-
-    cache = {
-      loadedAt: Date.now(),
-      rows,
-      source: localPath,
-    };
-
-    return cache;
-  }
-
-  const zipUrl = await getLatestZipUrl();
-  const zipResponse = await axios.get(zipUrl, {
-    timeout: 120000,
-    responseType: 'arraybuffer',
-    maxContentLength: 1024 * 1024 * 1024,
-    headers: {
-      'User-Agent': 'Mozilla/5.0',
-    },
-  });
-
-  const zip = new AdmZip(Buffer.from(zipResponse.data));
-  const csvEntry = zip.getEntries().find((entry) => entry.entryName.toLowerCase().endsWith('.csv'));
-
-  if (!csvEntry) {
-    throw new Error('El ZIP de SEPA no trae un CSV legible.');
-  }
-
-  const rows = await parseCsvBuffer(csvEntry.getData());
+  const comerciosMap = await loadComercios();
+  const sucursalesMap = await loadSucursales();
+  const rows = await loadProductos(comerciosMap, sucursalesMap);
 
   cache = {
     loadedAt: Date.now(),
     rows,
-    source: zipUrl,
+    source: SEPA_CSV_PATH,
   };
 
   return cache;
