@@ -53,11 +53,18 @@ async function loadComercios() {
   const map = new Map();
 
   for (const row of rows) {
-    const key = `${row.id_comercio || ''}-${row.id_bandera || ''}`;
+    const idComercio = String(row.id_comercio || '').trim();
+    const idBandera = String(row.id_bandera || '').trim();
+
+    const key = `${idComercio}-${idBandera}`;
     map.set(key, {
-      id_comercio: row.id_comercio || '',
-      id_bandera: row.id_bandera || '',
-      nombre: row.comercio_razon_social || row.bandera_descripcion || row.bandera || 'Comercio no informado',
+      id_comercio: idComercio,
+      id_bandera: idBandera,
+      nombre:
+        row.comercio_razon_social ||
+        row.bandera_descripcion ||
+        row.bandera ||
+        `Comercio ${idComercio}`,
     });
   }
 
@@ -69,10 +76,13 @@ async function loadSucursales() {
   const map = new Map();
 
   for (const row of rows) {
-    const key = `${row.id_comercio || ''}-${row.id_sucursal || ''}`;
+    const idComercio = String(row.id_comercio || '').trim();
+    const idSucursal = String(row.id_sucursal || '').trim();
+
+    const key = `${idComercio}-${idSucursal}`;
     map.set(key, {
-      id_comercio: row.id_comercio || '',
-      id_sucursal: row.id_sucursal || '',
+      id_comercio: idComercio,
+      id_sucursal: idSucursal,
       provincia: row.nom_provincia || row.provincia || '',
       localidad: row.nom_localidad || row.localidad || '',
       direccion: row.domicilio || row.direccion || '',
@@ -96,9 +106,9 @@ async function loadProductos(comerciosMap, sucursalesMap) {
       .on('data', (row) => {
         if (results.length >= MAX_ROWS_TO_SCAN) return;
 
-       const idComercio = String(row.id_comercio || '').trim();
-const idBandera = String(row.id_bandera || '').trim();
-const idSucursal = String(row.id_sucursal || '').trim();
+        const idComercio = String(row.id_comercio || '').trim();
+        const idBandera = String(row.id_bandera || '').trim();
+        const idSucursal = String(row.id_sucursal || '').trim();
 
         const comercioKey = `${idComercio}-${idBandera}`;
         const sucursalKey = `${idComercio}-${idSucursal}`;
@@ -160,17 +170,17 @@ async function searchProducts({ query, provincia, limit = 20 }) {
   const provinceNeedle = normalizeText(provincia);
 
   const filtered = rows.filter((row) => {
-  const haystack = normalizeText(`${row.nombre} ${row.marca} ${row.ean}`);
-  const palabras = needle.split(' ').filter(Boolean);
+    const haystack = normalizeText(`${row.nombre} ${row.marca} ${row.ean}`);
+    const palabras = needle.split(' ').filter(Boolean);
 
-  const match = palabras.every(p => haystack.includes(p));
+    const match = palabras.every((p) => haystack.includes(p));
 
-  const provinceOk =
-    !provinceNeedle ||
-    normalizeText(row.provincia).includes(provinceNeedle);
+    const provinceOk =
+      !provinceNeedle ||
+      normalizeText(row.provincia).includes(provinceNeedle);
 
-  return match && provinceOk;
-});
+    return match && provinceOk;
+  });
 
   const grouped = new Map();
 
