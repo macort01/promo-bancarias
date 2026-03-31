@@ -96,9 +96,9 @@ async function loadProductos(comerciosMap, sucursalesMap) {
       .on('data', (row) => {
         if (results.length >= MAX_ROWS_TO_SCAN) return;
 
-        const idComercio = row.id_comercio || '';
-        const idBandera = row.id_bandera || '';
-        const idSucursal = row.id_sucursal || '';
+       const idComercio = String(row.id_comercio || '').trim();
+const idBandera = String(row.id_bandera || '').trim();
+const idSucursal = String(row.id_sucursal || '').trim();
 
         const comercioKey = `${idComercio}-${idBandera}`;
         const sucursalKey = `${idComercio}-${idSucursal}`;
