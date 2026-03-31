@@ -114,7 +114,16 @@ async function loadProductos(comerciosMap, sucursalesMap) {
         const sucursalKey = `${idComercio}-${idSucursal}`;
 
         const comercio = comerciosMap.get(comercioKey);
-        const sucursal = sucursalesMap.get(sucursalKey);
+        let sucursal = sucursalesMap.get(sucursalKey);
+
+// fallback si no encuentra (IMPORTANTE)
+if (!sucursal) {
+  const match = Array.from(sucursalesMap.values()).find(s =>
+    String(s.id_comercio).trim() === idComercio &&
+    String(s.id_sucursal).trim().replace(/^0+/, '') === idSucursal.replace(/^0+/, '')
+  );
+  if (match) sucursal = match;
+}
 
         const item = {
           id: row.id_producto || '',
