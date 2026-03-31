@@ -160,10 +160,17 @@ async function searchProducts({ query, provincia, limit = 20 }) {
   const provinceNeedle = normalizeText(provincia);
 
   const filtered = rows.filter((row) => {
-    const haystack = normalizeText(`${row.nombre} ${row.marca} ${row.ean}`);
-    const provinceOk = !provinceNeedle || normalizeText(row.provincia).includes(provinceNeedle);
-    return haystack.includes(needle) && provinceOk;
-  });
+  const haystack = normalizeText(`${row.nombre} ${row.marca} ${row.ean}`);
+  const palabras = needle.split(' ').filter(Boolean);
+
+  const match = palabras.every(p => haystack.includes(p));
+
+  const provinceOk =
+    !provinceNeedle ||
+    normalizeText(row.provincia).includes(provinceNeedle);
+
+  return match && provinceOk;
+});
 
   const grouped = new Map();
 
