@@ -48,26 +48,42 @@ function readPipeCsv(filePath, mapper) {
   });
 }
 
-async function loadComercios() {
-  const rows = await readPipeCsv(SEPA_COMERCIO_PATH);
+async function loadSucursales() {
+  const rows = await readPipeCsv(SEPA_SUCURSALES_PATH);
   const map = new Map();
 
   for (const row of rows) {
     const idComercio = String(row.id_comercio || '').trim();
-    const idBandera = String(row.id_bandera || '').trim();
+    const idSucursal = String(row.id_sucursal || '').trim();
 
-    const key = `${idComercio}-${idBandera}`;
+    const key = `${idComercio}-${idSucursal}`;
+
     map.set(key, {
       id_comercio: idComercio,
-      id_bandera: idBandera,
-      nombre:
-        row.comercio_razon_social ||
-        row.bandera_descripcion ||
-        row.bandera ||
-        `Comercio ${idComercio}`,
+      id_sucursal: idSucursal,
+
+      provincia:
+        row.sucursales_provincia ||
+        row.provincia ||
+        '',
+
+      localidad:
+        row.sucursales_localidad ||
+        row.localidad ||
+        '',
+
+      direccion:
+        `${row.sucursales_calle || ''} ${row.sucursales_numero || ''}`.trim(),
+
+      sucursal_nombre:
+        row.sucursales_nombre ||
+        row.sucursal_nombre ||
+        '',
     });
   }
 
+  return map;
+}
   return map;
 }
 
